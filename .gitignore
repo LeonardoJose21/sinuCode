@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media
+/static
+
+# Ignore the Vite build directory
+dist/
+
+# Dependency directories
+node_modules/
+venv/
+env/
+.venv/
+.env
+
+# Frontend build output
+build/
+public/
+
+# MacOS files
+.DS_Store
+
+# Virtual environments
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Test files
+coverage/
+*.cover
+*.py,cover
+*.pid
+*.seed
+*.tar.gz
+*.log
+
+# Django secret key
+.env
+
+# Local environment settings
+local_settings.py
