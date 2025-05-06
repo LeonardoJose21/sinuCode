@@ -1,1 +1,1 @@
-web: gunicorn secp.wsgi
+web: gunicorn secp.wsgi --chdir backend
