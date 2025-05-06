@@ -1,1 +1,1 @@
-web: gunicorn backend.secp.wsgi
+web: gunicorn secp.wsgi
