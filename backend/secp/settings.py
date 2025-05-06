@@ -99,6 +99,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'secp.wsgi.application'
 
 
