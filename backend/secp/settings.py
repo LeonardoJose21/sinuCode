@@ -110,7 +110,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'CONN_MAX_AGE': 600,
-        'URL': 'postgres://username:password@hostname:port/database_name',
+        'URL': 'postgresql://postgres:QqriFWXRsssJQPAkHzIFFJysMAIcPeyX@shinkansen.proxy.rlwy.net:12933/railway',
     }
 }
 
