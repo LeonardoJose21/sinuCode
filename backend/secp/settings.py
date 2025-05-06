@@ -106,12 +106,9 @@ WSGI_APPLICATION = 'secp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sinu_code',
-        'USER': 'root',
-        'PASSWORD': 'leopas23',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.postgresql',
+        'CONN_MAX_AGE': 600,
+        'URL': 'postgres://username:password@hostname:port/database_name',
     }
 }
 
