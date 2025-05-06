@@ -13,13 +13,14 @@ import { useEffect, useState } from 'react';
 export default function Problem() {
     const { writtenProblem, setWrittenProblem, selectedProblem, setSelectedProblem, language, setLanguage } = useProblemContext();
     const [problemType, setProblemType] = useState('write');
-    const [difficulty, setDifficulty] = useState('');
+    const [difficulty, setDifficulty] = useState('facil');
     const [topic, setTopic] = useState('');
     const [filteredProblems, setFilteredProblems] = useState([]);
     const [codingProblems, setCodingProblems] = useState([]);
 
     const handleInputChange = (event) => {
         setWrittenProblem(event.target.value);
+        console.log(event.target.value);
     };
 
     useEffect(() => {
@@ -69,10 +70,7 @@ export default function Problem() {
                             <SelectItem value="java">Java</SelectItem>
                         </SelectContent>
                     </Select>
-
-                    {problemType === 'select' ? (
-                        <>
-                            <Select onValueChange={(value) => setDifficulty(value)}>
+                    <Select onValueChange={(value) => setDifficulty(value)}>
                                 <SelectTrigger className="w-full mt-4">
                                     <SelectValue placeholder="Selecciona la dificultad del problema" />
                                 </SelectTrigger>
@@ -81,7 +79,10 @@ export default function Problem() {
                                     <SelectItem value="medio">Medio</SelectItem>
                                     <SelectItem value="dificil">Dificil</SelectItem>
                                 </SelectContent>
-                            </Select>
+                    </Select>
+
+                    {problemType === 'select' ? (
+                        <>
 
                             <Select onValueChange={(value) => setTopic(value)}>
                                 <SelectTrigger className="w-full mt-4">
@@ -104,8 +105,11 @@ export default function Problem() {
                         <h3 className='text-base font-semibold ml-4 px-2'>
                             Descripción del problema
                         </h3>
-                        <Button variant="secondary" onClick={() => window.location.reload()} > Nuevo problema </Button>
+                        <Button className="bg-slate-600" onClick={() => window.location.reload()} > Nuevo problema </Button>
                     </div>
+                    {problemType === 'write' &&(
+                        <p className='mx-6 text-sm text-gray-600 mb-5 mt-5'>Nota: Si desea escribir su propia ejercicio es importante que defina el lenguaje y la dificulta del ejercicio. Por defecto se establece python y facil respectivamente como valores predeterminados</p>
+                    )}
 
                     {problemType === 'write' ? (
                         <div className="relative mt-4 mx-5">

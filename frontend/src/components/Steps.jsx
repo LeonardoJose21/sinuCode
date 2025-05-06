@@ -8,6 +8,7 @@ import GetHints from './GetHints';
 import { getChatGptResponse } from '../services/chatgptService';
 import Solution from './CanvasForCode';
 import { useProblemContext } from '../ProblemContext';
+import { ACCESS_TOKEN } from "../constants";
 import axios from 'axios';
 
 // Fake data generator
@@ -46,14 +47,14 @@ const getListStyle = isDraggingOver => ({
 
 
 export default function Steps() {
-    const { writtenProblem, selectedProblem, language } = useProblemContext();
-    const [steps, setSteps] = useState(getItems(0));
-    const [solution, setSolution] = useState('');
+    const { writtenProblem, selectedProblem, language, setStepContent,
+        solution, setSolution, verificationResult, setVerificationResult } = useProblemContext();
     const [inputValue, setInputValue] = useState('');
     const [isLoadingHint, setIsLoadingHint] = useState(false);
     const [hintUsed, setHintUsed] = useState(false);
-    const [verificationResult, setVerificationResult] = useState('');
+    const [steps, setSteps] = useState(getItems(0));
     const [feedback, setFeedback] = useState('');
+    let problemId = null // Store the problem ID if needed
 
 
     let prompt;
@@ -68,6 +69,7 @@ export default function Steps() {
         if (inputValue.trim() !== '') {
             const newStep = { id: uuidv4(), content: inputValue };
             setSteps([...steps, newStep]);
+            setStepContent(prevContent => [...prevContent, inputValue]);
             setInputValue(''); // Clear input field after adding
         }
     };
@@ -92,12 +94,12 @@ export default function Steps() {
                 prompt = `Convert the following step to ${language} code: ${draggedStep.content}. Comments and variables must be in Spanish. Use simple solutions.`;
             } else {
                 prompt = `Convert the following step to ${language} code: ${draggedStep.content}. Comments and variables must be in Spanish. Use simple solutions. The user already has this code: ${solution}. Ensure your answer combines properly with the previous code. In other words, your answer must be the previous code plus the new one. *Provide only the code from the beginning up to the current step without revealing the entire solution unless it's the final step*. Plus, never give the code inside multilines docstrings`;
-            }            
+            }
 
             const response = await getChatGptResponse(prompt);
             const code = response.choices[0].message.content;
-            
-          
+
+
             setSolution(code);
 
             const newSteps = steps.filter((_, i) => i !== result.source.index);
@@ -111,34 +113,87 @@ export default function Steps() {
     const verifySolution = async (setLoading) => {
         setLoading(true);
         try {
-            const response = await axios.post(import.meta.env.VITE_API_URL+'/playground/api/verify-solution/', {
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/playground/api/verify-solution/', {
                 script: solution,
                 language: language
             });
-            
+
             setVerificationResult(response.data.output);
-            
+
+            if (selectedProblem === null) {
+                try {
+                    const response = await axios.post(`${import.meta.env.VITE_API_URL}/playground/api/save-written-problem/`,
+                        {
+
+                            problema: writtenProblem,   // assuming problem.problema is the written text
+                            lenguaje: language,
+                            dificultad: 'facil' // or get this from the UI
+                            
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    );
+
+                    problemId = response.data.id;
+                    console.log("Problema escrito guardado exitosamente:", response.data.id);
+                    // now you can use savedProblemId to continue saving the solved problem
+                } catch (error) {
+                    console.error("Error al guardar el problema escrito:", error);
+                }
+            } else{
+                problemId = selectedProblem.id;
+            }
+
+
+            if (response.data.status === 'success') {
+                try {
+                    console.log(problemId);
+                    await axios.post(`${import.meta.env.VITE_API_URL}/playground/api/save-verified-problem/`, {
+                        problema_id: problemId,
+                        solucion: solution,
+                        retroalimentacion: feedback, // From ChatGPT response
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    console.log("Problema guardado exitosamente.");
+                } catch (error) {
+                    console.error("Error al guardar el problema:", error.response?.data || error.message);
+                }
+            }
+
         } catch (error) {
             console.error('Error verifying solution:', error);
-            setVerificationResult('Error verifying solution.');
+            setVerificationResult('Ha ocurrido un  error. Intente de nuevo.');
         } finally {
             setLoading(false);
-            const prompt = "Analyze this code: '"+ solution +"' and its corresponding solution: '"+verificationResult+"'. And provide feedback. " +
-               "If the code is correct, just say it to the student, and highlight the corrects parts of the code and explain why they are correct. " +
-               "If the code is not correct, identify all the issues or areas for improvement, and explain why these aspects are incorrect. " +
-               "'. YOUR ANSWER MUST BE IN SPANISH. Try to give the answer in a single paragraph and keep in mind that this is for a completely beginner programmer.";
+            const prompt = `Eres un asistente experto en programación que ayuda a estudiantes principiantes. 
+                            Analiza el siguiente código escrito por un estudiante: '${solution}' y compáralo con la solución esperada: '${verificationResult}'. 
 
+                            Proporciona retroalimentación clara y útil en español. 
+
+                            - Si el código es correcto, felicita al estudiante brevemente, explica por qué su lógica es adecuada y menciona qué partes del código están bien estructuradas.
+                            - Si hay errores o aspectos por mejorar, identifica los problemas claramente y ofrece sugerencias concretas para corregirlos o mejorar el enfoque.
+                            - También puedes proponer una solución alternativa con una lógica diferente si crees que es útil para el aprendizaje.
+
+                            Tu respuesta debe estar escrita como un solo párrafo, usando un lenguaje sencillo y amigable, ideal para alguien que está empezando a aprender a programar.`
             try {
                 const response = await getChatGptResponse(prompt);
-                
+
                 setFeedback(response.choices[0].message.content)
-                
+
             } catch (error) {
                 console.error('Error generating hint:', error);
             }
-        } 
+        }
     };
-    
+
 
     const definePrompt = () => {
         let delected_or_written;
@@ -161,7 +216,7 @@ export default function Steps() {
             .map(item => item.replace(/[\[\]]/g, '').trim()); // Remove only the brackets, trim each item
         return items;
     };
-    
+
 
     const handleGenerateHint = async () => {
 
@@ -256,18 +311,18 @@ export default function Steps() {
                         )}
                     </Droppable>
                 </DragDropContext>
-                
-                <div className='flex flex-col md:flex-row bg-gray-300 p-2 h-52 text-start'>
-                        <div className='w-1/2 bg-slate-900 text-gray-100 p-2 overflow-y-scroll'>
-                        <h1 className='text-xl font-semibold text-green-600 mb-2'>Resultado:</h1>
-                        <p>{verificationResult}</p>
-                        </div>
-                        <div className='w-1/2 bg-slate-900 text-gray-100 p-2 overflow-y-scroll'>
-                        <h1 className='text-xl font-semibold text-green-600 mb-2'>Observaciones:</h1>
-                            <p>{feedback}</p>
-                        </div>
-                        
+
+                <div className='flex flex-col w-full md:flex-row bg-gray-300 p-2 min-h-[300px]'>
+                    <div className='md:w-1/2 bg-slate-900 text-gray-100 p-2 overflow-y-scroll'>
+                        <h1 className='text-xl font-semibold text-green-600 mb-2 mx-5'>Resultado:</h1>
+                        <p className='text-base leading-relaxed mx-5'>{verificationResult}</p>
+                    </div>
+                    <div className='md:w-1/2 bg-slate-900 text-gray-100 p-2 overflow-y-scroll mt-3'>
+                        <h1 className='text-xl font-semibold text-green-600 mb-2 mx-5'>Observaciones:</h1>
+                        <p className='text-base leading-relaxed mx-5'>{feedback}</p>
+                    </div>
                 </div>
+
             </div>
         </div>
     );

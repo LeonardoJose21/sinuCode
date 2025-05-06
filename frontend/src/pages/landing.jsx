@@ -1,7 +1,4 @@
 import React from 'react';
-import AcercaDe from '../components/landing/about';
-import Caracteristicas from '../components/landing/features';
-import Contacto from '../components/landing/contact';
 
 export default function LandingPage() {
   return (
@@ -32,13 +29,11 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <Caracteristicas />
-        <AcercaDe />
-        <Contacto />
+       
       </main>
 
       <footer className="p-6 bg-slate-900 text-white text-center">
-        <p>&copy; 2024 SinúCode. Todos los derechos reservados.</p>
+        <p>&copy; 2025 SinúCode. Todos los derechos reservados.</p>
       </footer>
     </div>
   );

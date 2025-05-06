@@ -1,7 +1,9 @@
 import React from 'react';
 import Steps from '../components/Steps';
-import InputOutputComponent from '../components/InputsAndOutputs';
 import Problem from '../components/Problem';
+import FeedbackSection from '../components/FeedbackSection';
+import ChatbotBubble from '../components/Chatbot';
+import CodeVisualization from '../components/codeViz';
 
 export default function Home() {
 
@@ -9,14 +11,20 @@ export default function Home() {
     <div className="flex flex-col text-slate-900">
       <div className="flex flex-1 flex-col">
         <div className="p-5 border-b md:border-b-0 md:border-r border-gray-300 flex-1">
-          <h2 className="text-xl font-semibold mb-4">Problema</h2>
+          <h2 className="text-xl font-semibold mb-4">Problemas</h2>
           <Problem />
-          <h3 className="text-lg font-medium mb-1 mt-8">1) ¿Cuáles son los datos de entrada y salida del programa o algoritmo?</h3>
-          <p className='px-2 text-base'> Escriba, uno por uno, los datos de entrada (si son necesarios) y de salida del programa. Si está confundido o no sabe por donde empezar puede pedir pistas.</p>
-          <InputOutputComponent  />
-          <h3 className="text-lg font-medium mb-2">2) Pasos para resolver el problema</h3>
+          <h3 className="text-lg font-medium mb-2 mt-10">Resolución del problema</h3>
           <Steps />
+          <CodeVisualization />
+          <FeedbackSection />
+          <footer className="p-6 bg-slate-900 text-white text-center">
+            <p>&copy; 2025 SinúCode. Todos los derechos reservados.</p>
+          </footer>
         </div>
+      </div>
+
+      <div className="fixed bottom-6 right-6 z-50">
+        <ChatbotBubble />
       </div>
     </div>
   );

@@ -8,8 +8,8 @@ import { useProblemContext } from '../ProblemContext';
 import { Loader } from 'lucide-react';
 
 
-const Solution = ({ provided, snapshot, solution, setSolution, verifySolution }) => {
-    const { language } = useProblemContext();
+const Solution = ({ provided, snapshot, solution_, setSolution, verifySolution }) => {
+    const { language, selectedProblem, writtenProblem, solution} = useProblemContext();
     const [loading, setLoading] = useState(false); 
 
     const handleEditorChange = (value, viewUpdate) => {
@@ -17,6 +17,14 @@ const Solution = ({ provided, snapshot, solution, setSolution, verifySolution })
     };
 
     const handleVerifySolution = () => {
+        if ( selectedProblem == null && writtenProblem == ''){
+            alert("Para verificar debes escoger o redactar un problema");
+            return;
+        }
+        if (solution === '') {
+            alert("No puedes verificar una solución vacía");
+            return;
+        }
         verifySolution(setLoading);
     };
 
@@ -40,7 +48,7 @@ const Solution = ({ provided, snapshot, solution, setSolution, verifySolution })
             </div>
 
             <CodeMirror
-                value={solution}
+                value={solution_}
                 height="200px"
                 theme={oneDark}
                 extensions={[javascript(), EditorView.lineWrapping]}

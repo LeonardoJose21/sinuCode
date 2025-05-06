@@ -1,6 +1,8 @@
 # serializers.py
 from django.contrib.auth.models import User
 from rest_framework import serializers
+
+from playground.models import ProblemasResueltos
 from .models import Estudiante
 
 class UserSerializer(serializers.ModelSerializer):
@@ -18,10 +20,18 @@ class EstudianteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Estudiante
-        fields = ["user", "nombre", "sexo", "carrera"]
+        fields = ["user", "nombre_completo", "programa_academico", 
+                  "cantidad_ejercicios_resueltos", "dificultad_predominante"]
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
         estudiante, created = Estudiante.objects.update_or_create(user=user, **validated_data)
         return estudiante
+    
+class ProblemasResueltosSerializer(serializers.ModelSerializer):
+    problema_nombre = serializers.CharField(source='problema.problema')  # if your field is called "problema"
+    class Meta:
+        model = ProblemasResueltos
+        fields = ['id', 'problema_nombre', 'retroalimentacion', 'solucion']
+
