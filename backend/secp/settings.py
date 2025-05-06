@@ -85,7 +85,7 @@ ROOT_URLCONF = 'secp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend_build'],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend_build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
