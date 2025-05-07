@@ -1,4 +1,4 @@
-backed> $build.sh
+backend> $build.sh
     set -o errexit
 
     pip install -r requirements.txt
