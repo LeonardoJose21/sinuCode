@@ -15,6 +15,8 @@ from datetime import timedelta
 from decouple import config
 import os
 
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,8 +30,11 @@ SECRET_KEY = 'django-insecure-6z&ugmgotfltbf*@6t**=a0&9ujs$b^hbcxhhsvp1g6kliv5k5
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+SECRET_KEY = os.environ.get['SECRET_KEY']
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [os.environ.get['RENDER_EXTERNAL_HOSTNAME']]
+CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get['RENDER_EXTERNAL_HOSTNAME']]
+
 
 
 REST_FRAMEWORK = {
@@ -63,9 +68,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,6 +80,14 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
@@ -107,11 +120,10 @@ WSGI_APPLICATION = 'secp.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'CONN_MAX_AGE': 600,
-        'URL': 'postgresql://postgres:QqriFWXRsssJQPAkHzIFFJysMAIcPeyX@shinkansen.proxy.rlwy.net:12933/railway',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 
@@ -160,7 +172,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend_build/assets')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR/'staticfiles'
 
 TEMPLATES = [
     {
