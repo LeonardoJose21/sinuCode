@@ -1,8 +1,9 @@
-backend/secp> $build.sh
-    set -o errexit
+#!/bin/bash
+set -o errexit
 
-    pip install -r requirements.txt
+# Go to the root of the project to install dependencies
+pip install -r ../../requirements.txt
 
-    python -m backend.manage collectstatic --no-input
-
-    python manage.py migrate
+# Run collectstatic and migrate from the current directory (which contains manage.py)
+python manage.py collectstatic --no-input
+python manage.py migrate
