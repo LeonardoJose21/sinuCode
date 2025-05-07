@@ -3,6 +3,6 @@ backend> $build.sh
 
     pip install -r requirements.txt
 
-    python -m backend.secp.manage collectstatic --no-input
+    python -m backend.manage collectstatic --no-input
 
     python manage.py migrate
