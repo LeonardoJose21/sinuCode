@@ -12,7 +12,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = EstudianteSerializer
     permission_classes = [AllowAny]
 
-@api_view(['GET'])
+@api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def get_estudiante(request):
     try:
