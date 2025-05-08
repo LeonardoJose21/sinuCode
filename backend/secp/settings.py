@@ -35,9 +35,8 @@ ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                  'sinucodefront.onrender.com']
 CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                         'https://api.openai.com',
-                        'https://api.jdoodle.com']
-
-
+                        'https://api.jdoodle.com',
+                 'https://sinucodefront.onrender.com']
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
