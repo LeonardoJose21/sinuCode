@@ -12,6 +12,7 @@ from api.serializers import ProblemasResueltosSerializer
 from .utils import actualizar_estadisticas_estudiante, contains_error
 from .models import EncuestasPreguntas, EncuestasRespuestas, Monitorias, ProblemasDeProgramacion, ProblemasResueltos, Retroalimentacion
 
+@csrf_exempt
 def chatgpt_api(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -35,6 +36,7 @@ def chatgpt_api(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
     
+@csrf_exempt
 def verify_solution(request):
     if request.method == 'POST':
         data = json.loads(request.body)
