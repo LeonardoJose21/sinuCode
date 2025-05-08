@@ -29,12 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-ALLOWED_HOSTS = ['api.jdoodle.com',
-                 'api.openai.com',
-                 'sinucodefront.onrender.com',
-                 'sinucode.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['https://api.openai.com',
-                        'https://api.jdoodle.com']
+ALLOWED_HOSTS = ['http://sinucodefront.onrender.com']
+# CSRF_TRUSTED_ORIGINS = ['https://api.openai.com',
+#                         'https://api.jdoodle.com']
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
