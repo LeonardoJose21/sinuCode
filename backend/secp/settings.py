@@ -28,10 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
-
+AllOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 CORS_ALLOWED_ORIGINS = ['https://sinucodefront.onrender.com']
-# CSRF_TRUSTED_ORIGINS = ['https://api.openai.com',
-#                         'https://api.jdoodle.com']
+CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
