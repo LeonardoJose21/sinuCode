@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-ALLOWED_HOSTS = ['http://sinucodefront.onrender.com']
+ALLOWED_HOSTS = ['sinucodefront.onrender.com']
 # CSRF_TRUSTED_ORIGINS = ['https://api.openai.com',
 #                         'https://api.jdoodle.com']
 
@@ -50,6 +50,7 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,7 +61,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'api',
     'rest_framework',
-    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -168,22 +169,6 @@ CORS_ALLOWS_CREDENTIALS = True
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend_build/assets')]
 STATIC_ROOT = BASE_DIR/'staticfiles'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend_build')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
 
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 JDOODLE_CLIENT_ID = config("JDOODLE_CLIENT_ID")
