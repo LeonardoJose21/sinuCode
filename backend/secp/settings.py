@@ -31,12 +31,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                  'api.jdoodle.com',
-                 'api.openai.com',
-                 'sinucodefront.onrender.com']
+                 'api.openai.com']
 CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                         'https://api.openai.com',
-                        'https://api.jdoodle.com',
-                 'https://sinucodefront.onrender.com']
+                        'https://api.jdoodle.com']
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
