@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 SECRET_KEY = os.environ.get('SECRET_KEY')
 AllOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 CORS_ALLOWED_ORIGINS = ['https://sinucodefront.onrender.com']
