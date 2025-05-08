@@ -31,7 +31,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                  'api.jdoodle.com',
-                 'api.openai.com']
+                 'api.openai.com',
+                 'sinucode.onrender.com']
 CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
                         'https://api.openai.com',
                         'https://api.jdoodle.com']
