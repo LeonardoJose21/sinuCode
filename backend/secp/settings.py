@@ -28,8 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 SECRET_KEY = os.environ.get('SECRET_KEY')
-AllOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME','sinucode.onrender.com'),
-                'sinucode.onrender.com',
+ALLOWED_HOSTS= ['sinucode.onrender.com',
                 'localhost',
                 '127.0.0.1']
 CORS_ALLOWED_ORIGINS = ['https://sinucodefront.onrender.com']
