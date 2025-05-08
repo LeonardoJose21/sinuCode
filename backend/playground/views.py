@@ -273,7 +273,7 @@ def save_written_problem(request):
             problema=problema,
             lenguaje=lenguaje,
             dificultad=dificultad,
-            tema=tema if tema else None
+            tema=tema if tema else ""
         )
 
         return JsonResponse({'id': nuevo_problema.id}, status=201)
