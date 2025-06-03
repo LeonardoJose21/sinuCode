@@ -14,7 +14,6 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 import os
-
 import dj_database_url
 
 
@@ -26,12 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 ALLOWED_HOSTS= ['sinucode.onrender.com',
                 'localhost',
                 '127.0.0.1']
-CORS_ALLOWED_ORIGINS = ['https://sinucodefront.onrender.com']
+CORS_ALLOWED_ORIGINS = ['https://sinucodefront.onrender.com', "http://localhost:5173"]
 CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 
 REST_FRAMEWORK = {
@@ -113,13 +113,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'secp.wsgi.application'
 
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")  # Use an App Password, NOT your actual Gmail password
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        os.environ.get('DATABASE_URL'),
         conn_max_age=600
     )
 }
@@ -174,5 +185,6 @@ STATIC_ROOT = BASE_DIR/'staticfiles'
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 JDOODLE_CLIENT_ID = config("JDOODLE_CLIENT_ID")
 JDOODLE_CLIENT_SECRET = config("JDOODLE_CLIENT_SECRET")
+FRONTEND_URL = config("FRONTEND_URL")
 # AUTH_USER_MODEL = 'users.User'
 

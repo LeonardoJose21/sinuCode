@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
-from .views import ask_for_monitory, chatgpt_api, get_all_feedback, get_all_monitors, \
-    get_all_users, get_questions, save_verified_problem, save_written_problem, solved_problems_view, \
+from .views import ask_for_monitory, chatgpt_api, dashboard_metrics, get_all_feedback, get_all_monitorias, get_all_monitors, \
+    get_all_users, get_monitorias_by_monitor, get_questions, save_verified_problem, save_written_problem, solved_problems_view, \
     submit_feedback, verify_solution, \
     get_problems, save_answers_survey
 
@@ -19,4 +19,7 @@ urlpatterns = [
     path('api/save-verified-problem/', save_verified_problem, name='save_problem'),
     path('api/save-written-problem/', save_written_problem, name='save_written_problem'),
     path('api/resueltos/', solved_problems_view, name='get_resolved_problems'),
+    path('api/dashboard-metrics/', dashboard_metrics),
+    path('monitorias/', get_all_monitorias, name='all-monitorias'),
+    path('monitorias/mias/', get_monitorias_by_monitor, name='monitor-monitorias'),
 ]

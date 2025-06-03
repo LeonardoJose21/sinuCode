@@ -4,12 +4,14 @@ from django.utils import timezone
 import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count, Avg
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 import json
 from api.models import Estudiante, Monitor
 from api.serializers import ProblemasResueltosSerializer
-from .utils import actualizar_estadisticas_estudiante, contains_error
+from .utils import MonitoriasSerializer, actualizar_estadisticas_estudiante, contains_error
 from .models import EncuestasPreguntas, EncuestasRespuestas, Monitorias, ProblemasDeProgramacion, ProblemasResueltos, Retroalimentacion
 
 @csrf_exempt
@@ -291,3 +293,73 @@ def solved_problems_view(request):
         return JsonResponse(serializer.data, safe=False)
     except Estudiante.DoesNotExist:
         return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard_metrics(request):
+    # Problemas metrics
+    problemas_por_dificultad = ProblemasDeProgramacion.objects.values('dificultad').annotate(total=Count('id'))
+    problemas_por_lenguaje = ProblemasDeProgramacion.objects.values('lenguaje').annotate(total=Count('id'))
+    problemas_por_tema = ProblemasDeProgramacion.objects.values('tema').annotate(total=Count('id')).order_by('-total')[:10]
+
+    # Problemas resueltos
+    total_resueltos = ProblemasResueltos.objects.count()
+    resueltos_por_dificultad = ProblemasResueltos.objects.values('problema__dificultad').annotate(total=Count('id'))
+    resueltos_por_estudiante = ProblemasResueltos.objects.values('estudiante__nombre_completo').annotate(total=Count('id')).order_by('-total')[:10]
+
+    # Monitorías
+    monitorias_por_modalidad = Monitorias.objects.values('modalidad').annotate(total=Count('id'))
+    monitorias_por_tema = Monitorias.objects.values('tema').annotate(total=Count('id')).order_by('-total')[:10]
+
+    # Retroalimentación
+    total_feedback = Retroalimentacion.objects.count()
+    feedback_por_dia = Retroalimentacion.objects.extra(select={'day': "DATE(fecha)"}).values('day').annotate(total=Count('id')).order_by('day')
+
+    # Encuestas
+    respuestas_por_pregunta = EncuestasRespuestas.objects.values('pregunta__pregunta').annotate(total=Count('id')).order_by('-total')
+
+    # Estudiantes
+    total_estudiantes = Estudiante.objects.count()
+    promedio_resueltos = Estudiante.objects.aggregate(avg=Avg('cantidad_ejercicios_resueltos'))['avg']
+    dificultad_predominante = Estudiante.objects.values('dificultad_predominante').annotate(total=Count('id')).order_by('-total')
+
+    return Response({
+        "problemas_por_dificultad": list(problemas_por_dificultad),
+        "problemas_por_lenguaje": list(problemas_por_lenguaje),
+        "problemas_por_tema": list(problemas_por_tema),
+
+        "resueltos_totales": total_resueltos,
+        "resueltos_por_dificultad": list(resueltos_por_dificultad),
+        "resueltos_por_estudiante": list(resueltos_por_estudiante),
+
+        "monitorias_por_modalidad": list(monitorias_por_modalidad),
+        "monitorias_por_tema": list(monitorias_por_tema),
+
+        "retroalimentaciones_totales": total_feedback,
+        "feedback_por_dia": list(feedback_por_dia),
+
+        "respuestas_por_pregunta": list(respuestas_por_pregunta),
+
+        "total_estudiantes": total_estudiantes,
+        "promedio_resueltos_por_estudiante": promedio_resueltos,
+        "dificultad_predominante": list(dificultad_predominante),
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_monitorias(request):
+    monitorias = Monitorias.objects.all()
+    serializer = MonitoriasSerializer(monitorias, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_monitorias_by_monitor(request):
+    try:
+        monitor = Monitor.objects.get(user=request.user)
+    except Monitor.DoesNotExist:
+        return Response({"detail": "No existe monitor asociado al usuario."}, status=404)
+
+    monitorias = Monitorias.objects.filter(monitor=monitor)
+    serializer = MonitoriasSerializer(monitorias, many=True)
+    return Response(serializer.data)

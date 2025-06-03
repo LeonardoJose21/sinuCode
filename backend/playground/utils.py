@@ -1,6 +1,7 @@
 import re
 from django.db.models import Count
-from .models import ProblemasResueltos
+from rest_framework import serializers
+from .models import Monitorias, ProblemasResueltos
 
 def contains_error(output, language):
     output_lower = output.lower()
@@ -30,3 +31,9 @@ def actualizar_estadisticas_estudiante(estudiante):
     estudiante.cantidad_ejercicios_resueltos = cantidad
     estudiante.dificultad_predominante = dificultad['problema__dificultad'] if dificultad else None
     estudiante.save()
+
+
+class MonitoriasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Monitorias
+        fields = '__all__'

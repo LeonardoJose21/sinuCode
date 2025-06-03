@@ -24,9 +24,10 @@ class PersonalAcademico(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nombre_completo = models.CharField(max_length=100)
     rol = models.CharField(max_length=50, choices=[('monitor', 'Monitor'), ('docente', 'Docente')])
-
     class Meta:
         abstract = True
+
+  
 
 class Monitor(PersonalAcademico):
     def __str__(self):
